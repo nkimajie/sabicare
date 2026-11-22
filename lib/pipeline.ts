@@ -26,7 +26,8 @@ export async function extract(text: string, mode: Mode): Promise<Extracted> {
     const extra = (data.evidence as Evidence[]).filter((e) => !have.has(e.symptom));
     return { evidence: [...local.evidence, ...extra], uncertain: data.uncertain, motherAge: data.motherAge, source: data.source };
   } catch {
-    // Offline or server error: rely on the phone's own check.
-    return { ...local, motherAge: null, source: "phone" };
+    // Offline or server error: rely on the phone's own check, and since the AI could not
+    // confirm it, mark it uncertain so the result is never GREEN.
+    return { ...local, uncertain: true, motherAge: null, source: "phone" };
   }
 }
