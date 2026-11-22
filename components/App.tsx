@@ -164,7 +164,11 @@ export default function App() {
 
   function alertText(r: TriageResult) {
     const weeks = weeksPregnant(plan.dueDate);
-    const signs = evidence.map((e) => SYMPTOMS[e.symptom].label).join(", ");
+    // Don't list "Headache" next to "Severe headache" (same for belly pain).
+    const have = new Set(evidence.map((e) => e.symptom));
+    const signs = evidence
+      .filter((e) => !(e.symptom === "headache" && have.has("severe_headache")) && !(e.symptom === "abdominal_pain" && have.has("severe_abdominal_pain")))
+      .map((e) => SYMPTOMS[e.symptom].label).join(", ");
     const about = mode === "newborn" ? "My newborn baby needs help." : mode === "postpartum" ? "I gave birth recently." : weeks ? `I am ${weeks} weeks pregnant.` : "I am pregnant.";
     const age = ageOf(plan.age);
     return [
